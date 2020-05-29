@@ -12,4 +12,4 @@ Description of notebooks in this repo.
 The [Exploratory Analysis](https://github.com/stasianik/music-machine/tree/master/exploratory_analysis) folder contains notebooks with some initial explorations of feature data from Spotify, extracted using Spotipy.
 
 ## Data
-The [data](https://github.com/stasianik/music-machine/tree/master/data) folder contains some initial sample data from one of my playlists on Spotify. 
+The [Data](https://github.com/stasianik/music-machine/tree/master/data) folder contains some initial sample data from one of my playlists on Spotify. 
