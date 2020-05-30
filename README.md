@@ -1,4 +1,4 @@
-# Music Machine (temp name)
+# Music Machine
 ### Explore the culture of a city via its music 
 
 Not everyone has time to explore all of the artists local to a given city. If you're just passing through, or even if you want to learn about the music coming from your home base, how do you find local music? 
