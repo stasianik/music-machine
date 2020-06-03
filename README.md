@@ -1,5 +1,5 @@
 # Music Machine
-HEAD
+
 
 # Notebooks
 Description of notebooks in this repo.
