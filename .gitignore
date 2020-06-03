@@ -1,0 +1,2 @@
+#Ignore Emacs updates
+*~echo .DS_Store
