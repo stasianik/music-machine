@@ -1,2 +1,4 @@
 #Ignore Emacs updates
-*~echo .DS_Store
+*~
+#Ignore DS_Store
+.DS_Store
