@@ -1,5 +1,5 @@
 # Music Machine
-
+Generates music based on an artist's style. 
 
 # Notebooks
 Description of notebooks in this repo.
