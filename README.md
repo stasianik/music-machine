@@ -1,4 +1,4 @@
-# Music Machine
+# Mashup Machine
 Generates music based on an artist's style. 
 
 # Notebooks
