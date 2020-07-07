@@ -5,7 +5,7 @@ Generates music in the style of one of three artists, and fits them to the struc
 Description of notebooks in this repo.
 
 ## Data
-The [Data](https://github.com/stasianik/music-machine/tree/master/data) folder contains text and json files containing pre and post-processed lyrics. 
+The [text_data](https://github.com/stasianik/music-machine/tree/master/data) folder contains text and json files containing pre and post-processed lyrics. 
 
 ## Mashup Machine
 The [mashup_machine](https://github.com/stasianik/music-machine/tree/master/mashup_machine) folder contains scripts used for retrieving and processing lyrics used to train models, and scripts used for initial model testing. 
