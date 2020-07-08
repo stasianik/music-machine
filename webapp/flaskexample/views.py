@@ -2,7 +2,7 @@ from flask import render_template, request, Markup
 from flaskexample import app
 #import gpt_2_simple as gpt2
 from flaskexample.utils import lyrics_to_list, get_target_lyrics, fit_lyrics
-from collections import deque 
+from collections import deque
 
 # Load in model checkpoint and start a tensorflow session
 #sess = gpt2.start_tf_sess()
