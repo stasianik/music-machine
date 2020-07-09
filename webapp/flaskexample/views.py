@@ -24,7 +24,7 @@ def lyrics_output():
     artist = request.args.get('artist')
     title = request.args.get('title')
     target_lyrics = get_target_lyrics(artist, title)
-    
+#    print(target_lyrics)
     band = request.args.get('radioValue')
     #connect to button 
     if band == 'option1':
@@ -35,9 +35,8 @@ def lyrics_output():
         file_name = 'gpt2_gentext_IM.txt'
     
     gen_lyrics = lyrics_to_list(file_name)
-    #print(gen_lyrics)
+#    print(gen_lyrics)
     new_lyrics = fit_lyrics(gen_lyrics, target_lyrics) 
-        
     new_lyrics = deque(new_lyrics)
     new_lyrics.appendleft('New Lyrics:')
     lyrics1 = '<br>\n'.join(new_lyrics)

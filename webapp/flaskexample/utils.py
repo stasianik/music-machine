@@ -10,8 +10,10 @@ from big_phoney import BigPhoney
 import lyricsgenius as genius
 import random
 import nlpaug.augmenter.word as naw
+#from nlpaug.util import Action
 import re
-
+#import keras.backend.tensorflow_backend as tb
+#tb._SYMBOLIC_SCOPE.value = True
 #----------------For future live text generation-----------------
 # model_name = "124M"
 # model is saved into current directory under /models/124M/
@@ -77,10 +79,11 @@ def lyrics_to_list(file_name):
 
 #This function uses the count_syls function above to keep track of num of syllables in each line
 def fit_lyrics(gen_lyrics, target_lyrics):
-    aug = naw.ContextualWordEmbsAug(
-    model_path='bert-base-uncased', action="insert")
+    print(gen_lyrics)
+    aug = naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="insert")
+    print('aug')
     phoney = BigPhoney()
-    
+    print('initialized phoney')
     def count_syls(text):
     
         schema = []
@@ -91,6 +94,7 @@ def fit_lyrics(gen_lyrics, target_lyrics):
             #print(syls,line)
         
         return schema
+    
     def decontracted(phrase):
         # specific
         phrase = re.sub(r"won\'t", "will not", phrase)

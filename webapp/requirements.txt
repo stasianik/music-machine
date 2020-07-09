@@ -1,5 +1,8 @@
 tensorflow==2.0.0
+keras==2.3.1
 big_phoney==1.0.1
 Flask==1.1.2
 nlpaug==0.0.14
 lyricsgenius==1.8.6
+gunicorn==20.0.4
+matplotlib==3.2.1
