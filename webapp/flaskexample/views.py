@@ -35,6 +35,7 @@ def lyrics_output():
         file_name = 'gpt2_gentext_IM.txt'
     
     gen_lyrics = lyrics_to_list(file_name)
+    print('lyrics retrieved')
 #    print(gen_lyrics)
     new_lyrics = fit_lyrics(gen_lyrics, target_lyrics) 
     new_lyrics = deque(new_lyrics)
