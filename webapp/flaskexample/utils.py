@@ -5,16 +5,16 @@ Created on Thu Jun 18 22:33:46 2020
 
 @author: stasianik
 """
-#import gpt_2_simple as gpt2
+
 from big_phoney import BigPhoney
 import lyricsgenius as genius
 import random
 import nlpaug.augmenter.word as naw
-#from nlpaug.util import Action
 import re
-#import keras.backend.tensorflow_backend as tb
-#tb._SYMBOLIC_SCOPE.value = True
+
 #----------------For future live text generation-----------------
+#import gpt_2_simple as gpt2
+
 # model_name = "124M"
 # model is saved into current directory under /models/124M/
 # gpt2.download_gpt2(model_name=model_name) #need to run only once. comment out once done.
@@ -23,9 +23,6 @@ import re
 #sess = gpt2.start_tf_sess()
 #gpt2.load_gpt2(sess, run_name='run1')
 
-#Load text augmentation model
-#aug = naw.ContextualWordEmbsAug(
-#    model_path='bert-base-uncased', action="insert")
 #----------------------------------------------------------------
 
 def get_target_lyrics(artist, title):
@@ -47,12 +44,11 @@ def get_target_lyrics(artist, title):
     target = target.replace("\n\n","\n")
     target = target.replace("\n\n\n","\n")
     target = target.replace("2x","")
-    #create list of lines
+    
     target_lyrics = target.split("\n")
-    #print("Target lyrics:")
-    #print(target_lyrics)
     return target_lyrics
 
+#----------------For future live text generation-----------------
 #def generate_lyrics(): 
 #    
 #    gen_lyrics = gpt2.generate(sess, 
@@ -67,6 +63,7 @@ def get_target_lyrics(artist, title):
 #    gen_lyrics = gen_lyrics.split("\n")
 #    
 #    return gen_lyrics
+#----------------------------------------------------------------
 
 def lyrics_to_list(file_name):
     with open(file_name, 'r') as file:
@@ -74,10 +71,9 @@ def lyrics_to_list(file_name):
         random_song = random.choice(data)
         gen_lyrics = random_song.split("\n")
         gen_lyrics = gen_lyrics[1:-1]
-#    print(gen_lyrics)
+
     return gen_lyrics
 
-#This function uses the count_syls function above to keep track of num of syllables in each line
 def fit_lyrics(gen_lyrics, target_lyrics):
     print(gen_lyrics)
     aug = naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="insert")
@@ -173,4 +169,5 @@ def fit_lyrics(gen_lyrics, target_lyrics):
                         new_line = aug.augment(new_line)
                         syls = phoney.count_syllables(new_line)
                 new_lyrics.append(new_line)
+                
     return new_lyrics
