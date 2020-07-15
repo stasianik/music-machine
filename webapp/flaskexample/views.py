@@ -26,7 +26,7 @@ def lyrics_output():
     band = request.args.get('radioValue')
     #connect to button 
     if band == 'option1':
-        file_name = 'gpt2_gentext_slayer.txt'
+        file_name = 'gpt2_gentext_Bjork.txt'
     elif band == 'option2':
         file_name = 'gpt2_gentext_META.txt'
     elif band == 'option3':
