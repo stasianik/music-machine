@@ -27,6 +27,8 @@
   </style> 
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <!-- new line here - one line, java -->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <![endif]-->
 </head>
 <body>
@@ -85,12 +87,15 @@
           <input type="text" class= "form-control" id="title" name='title' placeholder="e.g. I'll Make a Man Out of You ">
         </div> 
      <br>
-          <input id="submit_button" class="btn btn-warning" type="submit" value="Generate new lyrics!">
+     <!-- new line here (onclick) -->
+          <input id="submit_button" class="btn btn-warning" type="submit" value="Generate new lyrics!" onclick="$('#loading').show();">
+             <div id="loading" style="display:none;"><img src="../../static/images/loading3.gif" alt="../../static/images/robot2.png" />Writing lyrics, please wait \(^_^)/</div>
          </div>
        </div>
       </div> 
    </div>
-
+<!-- new line here -->
+<!--   <div id="loading" style="display:none;"><img src="robot2.png" alt="" />Writing lyrics, please wait \(^_^)/</div> -->
    <div id="outputdiv">
    </div>
    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -109,6 +114,7 @@
               title: title},
       success: function(response) {
         $("#outputdiv").html(response);
+        $("#loading").hide();
       },
       error: function(xhr) {
         //Do Something to handle error
