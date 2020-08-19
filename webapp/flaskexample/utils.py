@@ -11,6 +11,7 @@ import lyricsgenius as genius
 import random
 import nlpaug.augmenter.word as naw
 import re
+import numpy as np
 
 #----------------For future live text generation-----------------
 #import gpt_2_simple as gpt2
@@ -69,17 +70,33 @@ def lyrics_to_list(file_name):
     with open(file_name, 'r') as file:
         data = file.read().split("====================")
         random_song = random.choice(data)
-        gen_lyrics = random_song.split("\n")
+        target = random_song
+        
+        # clean generatedd lyrics
+        target = target.replace("\u2005"," ")
+        target = target.replace("\\"," ")
+        target = target.replace("\\n"," ")
+        target = target.replace("("," ")
+        target = target.replace(")"," ")
+        target = target.replace("\n\n","\n")
+        target = target.replace("\n\n\n","\n")
+        target = target.replace("2x","")
+        gen_lyrics = target.split("\n")
         gen_lyrics = gen_lyrics[1:-1]
 
     return gen_lyrics
 
 def fit_lyrics(gen_lyrics, target_lyrics):
-    print(gen_lyrics)
+    
+    #print(gen_lyrics)
+    
     aug = naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="insert")
     print('aug')
+    
     phoney = BigPhoney()
     print('initialized phoney')
+    
+    # Counts the number of syllables in each line
     def count_syls(text):
     
         schema = []
@@ -91,6 +108,8 @@ def fit_lyrics(gen_lyrics, target_lyrics):
         
         return schema
     
+    # Remove characters and contractions from the line. This will make it easier to
+    # augment lines that need augmentation. 
     def decontracted(phrase):
         # specific
         phrase = re.sub(r"won\'t", "will not", phrase)
@@ -105,48 +124,75 @@ def fit_lyrics(gen_lyrics, target_lyrics):
         phrase = re.sub(r"\'t", " not", phrase)
         phrase = re.sub(r"\'ve", " have", phrase)
         phrase = re.sub(r"\'m", " am", phrase)
+        phrase = re.sub('[!@#$?]', '', phrase)
         return phrase
     
+    # Count the number of syllables in the generated and target texts.
     gen_schema = count_syls(gen_lyrics)
     target_schema = count_syls(target_lyrics)
 #    print(target_schema)
-    #make generated lyrics same length as target lyrics
+
+    # make generated lyrics same length as target lyrics
     target_len = len(target_schema)
     del gen_schema[target_len:]
     del gen_lyrics[target_len:]
+    
+    # initialize array for the new fitted lyrics
     new_lyrics = []
-#    loop = 1
+    
+    # loop through each line and either find existing line to place into the current position, 
+    # or augment the current line. 
+    
+    # keep track of repeated lines
+    repeats = np.array([])
     for num, line in enumerate(gen_lyrics):
-        
+        # if the line is already the right length, add it to the new lyrics. 
         if (gen_schema[num] == target_schema[num]): 
             new_lyrics.append(line)
+            
+        # if the line is not the right length, keep going until we find one that is
         elif (gen_schema[num] != target_schema[num]):
+            # keep track of the number of syllables in the current line
             syls = gen_schema[num]
+            temp_lyrics = gen_lyrics
+            # keep track of which line we're on 
             track = 0
+            # while the line is not the target length,
             while syls != target_schema[num]:
-                #while syls don't match the target
-                #make syls the next syls 
-                #if we're at the end then stop 
-                if track == len(gen_schema)-1:
+                
+                if track == len(temp_lyrics)-1:
                     end = True
                     break
                 else:
+                    # go to the next line
                     track = track + 1
+                    # check the num of syls
                     syls = gen_schema[track]
-                    line = gen_lyrics[track]
+                    line = temp_lyrics[track]
                     end = False
+                    
+            # if we found a line that's the right length before we reached the end,
+            # add the line to the new lyrics
             if end == False:
                 new_lyrics.append(line)
-            #If we can't find a line that's the right size
+                repeats = np.append(repeats, track)
+                if np.count_nonzero(repeats == track) >= 3:
+                    #print("repeats greater than 3")
+                    #print(line)
+                    temp_lyrics.pop(track)
+                #temp_lyrics.pop(track)
+                
+            #If we didn't find a line that's the right length,
             if end:
                 line = decontracted(line)
-#                print("No matching line")
+                print("No matching line")
                 #print(line)
                 while syls < target_schema[num]:
 #                    print("not enough syls")
                     original_line = line
                     line = aug.augment(line)
-#                    print(line)
+                    line = re.sub(r'[^\w\s]','',line)
+                    #print(line)
                     syls = phoney.count_syllables(line)
                 #In case we overshoot (add too many syllables)
                     if syls > target_schema[num]:
@@ -155,11 +201,11 @@ def fit_lyrics(gen_lyrics, target_lyrics):
                         syls = phoney.count_syllables(line)
                 new_line = line
 #                print("the same line:")
-#                print(line)
+                #print(line)
                 syls = gen_schema[num]
                 words = line.split(" ")
                 while syls > target_schema[num]:
-#                    print("too many syls")
+                    #print("too many syls")
                     del words[-1]
                     new_line = ' '.join(words)
                     syls = phoney.count_syllables(new_line)
@@ -171,3 +217,4 @@ def fit_lyrics(gen_lyrics, target_lyrics):
                 new_lyrics.append(new_line)
                 
     return new_lyrics
+
