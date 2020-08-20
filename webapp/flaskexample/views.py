@@ -21,7 +21,12 @@ def index():
 def lyrics_output():
     artist = request.args.get('artist')
     title = request.args.get('title')
-    target_lyrics = get_target_lyrics(artist, title)
+    
+    #get api key
+    lines = open('API.txt').readlines()
+    api_key = lines[0].strip()
+    
+    target_lyrics = get_target_lyrics(artist, title, api_key)
     
     band = request.args.get('radioValue')
     #connect to button 

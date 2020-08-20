@@ -26,9 +26,9 @@ import numpy as np
 
 #----------------------------------------------------------------
 
-def get_target_lyrics(artist, title):
+def get_target_lyrics(artist, title, api_key):
     
-    api_key = 'YOUR_API_KEY_HERE'
+    #api_key = 'YOUR_API_KEY_HERE'
     api = genius.Genius(api_key)
     api.remove_section_headers = True # Removes section headers like "Verse" and "Intro"
     
