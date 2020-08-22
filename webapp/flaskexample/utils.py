@@ -88,7 +88,7 @@ def lyrics_to_list(file_name):
 
 def fit_lyrics(gen_lyrics, target_lyrics):
     
-    #print(gen_lyrics)
+    print(gen_lyrics)
     
     aug = naw.ContextualWordEmbsAug(model_path='bert-base-uncased', action="insert")
     print('aug')
@@ -146,6 +146,13 @@ def fit_lyrics(gen_lyrics, target_lyrics):
     # keep track of repeated lines
     repeats = np.array([])
     for num, line in enumerate(gen_lyrics):
+        print("line in gen_lyrics:")
+        print(num)
+        print(line)
+        ##Right now gen_lyrics changes through each iteration, which is not good
+        print("length of gen_lyrics:")
+        print(len(gen_lyrics))
+        
         # if the line is already the right length, add it to the new lyrics. 
         if (gen_schema[num] == target_schema[num]): 
             new_lyrics.append(line)
@@ -154,67 +161,79 @@ def fit_lyrics(gen_lyrics, target_lyrics):
         elif (gen_schema[num] != target_schema[num]):
             # keep track of the number of syllables in the current line
             syls = gen_schema[num]
-            temp_lyrics = gen_lyrics
             # keep track of which line we're on 
             track = 0
             # while the line is not the target length,
             while syls != target_schema[num]:
                 
-                if track == len(temp_lyrics)-1:
+                if track == len(gen_lyrics)-1:
                     end = True
                     break
                 else:
                     # go to the next line
                     track = track + 1
                     # check the num of syls
-                    syls = gen_schema[track]
-                    line = temp_lyrics[track]
+                    new_line = gen_lyrics[track]
+                    syls = phoney.count_syllables(new_line)
                     end = False
-                    
+            print("syls:")
+            print(syls)
+            print("target schema syls")
+            print(target_schema[num])
             # if we found a line that's the right length before we reached the end,
             # add the line to the new lyrics
             if end == False:
-                new_lyrics.append(line)
+                new_lyrics.append(new_line)
                 repeats = np.append(repeats, track)
-                if np.count_nonzero(repeats == track) >= 3:
-                    #print("repeats greater than 3")
-                    #print(line)
-                    temp_lyrics.pop(track)
-                #temp_lyrics.pop(track)
+                if np.count_nonzero(repeats == track) >= 2:
+                    print("repeats greater than 3")
+                    print(new_line)
+                    gen_lyrics.pop(track)
+                    gen_schema.pop(track)
+                    print("length of gen_lyrics after pop")
+                    print(len(gen_lyrics))
+                    print("length of gen_schema after pop")
+                    print(len(gen_schema))
                 
             #If we didn't find a line that's the right length,
             if end:
                 line = decontracted(line)
                 print("No matching line")
                 #print(line)
+                syls = gen_schema[num]
                 while syls < target_schema[num]:
 #                    print("not enough syls")
                     original_line = line
                     line = aug.augment(line)
                     line = re.sub(r'[^\w\s]','',line)
-                    #print(line)
+                    print(line)
                     syls = phoney.count_syllables(line)
                 #In case we overshoot (add too many syllables)
                     if syls > target_schema[num]:
-                        #print("Oops we overshot")
+                        print("Oops we overshot")
                         line = original_line
                         syls = phoney.count_syllables(line)
                 new_line = line
 #                print("the same line:")
-                #print(line)
                 syls = gen_schema[num]
                 words = line.split(" ")
                 while syls > target_schema[num]:
-                    #print("too many syls")
-                    del words[-1]
+                    print("too many syls")
+                    original_words = words
+                    #instead of deleting the last word, try deleting a word randomly
+                    #del words[-1]
+                    words.pop(random.randrange(len(words))) 
                     new_line = ' '.join(words)
                     syls = phoney.count_syllables(new_line)
                     #In case too many syllables are deleted
                     if syls < target_schema[num]:
-                        #print("Oops, deleted too many")
-                        new_line = aug.augment(new_line)
+                        print("Oops, deleted too many")
+                        words = original_words
+                        new_line = ' '.join(words)
                         syls = phoney.count_syllables(new_line)
+                        
                 new_lyrics.append(new_line)
                 
     return new_lyrics
+
 
