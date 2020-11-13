@@ -108,7 +108,7 @@ def fit_lyrics(gen_lyrics, target_lyrics):
         
         return schema
     
-    # Remove characters and contractions from the line. This will make it easier to
+    # Remove special characters and contractions from the line. This will make it easier to
     # augment lines that need augmentation. 
     def decontracted(phrase):
         # specific
@@ -133,90 +133,73 @@ def fit_lyrics(gen_lyrics, target_lyrics):
 #    print(target_schema)
 
     # make generated lyrics same length as target lyrics
-    target_len = len(target_schema)
-    del gen_schema[target_len:]
-    del gen_lyrics[target_len:]
+    #target_len = len(target_schema)
+    #del gen_schema[target_len:]
+    #del gen_lyrics[target_len:]
     
     # initialize array for the new fitted lyrics
     new_lyrics = []
     
     # loop through each line and either find existing line to place into the current position, 
     # or augment the current line. 
-    
-    # keep track of repeated lines
-    repeats = np.array([])
+
     for num, line in enumerate(gen_lyrics):
-        
+        print("line in gen_lyrics:")
+        print(line)
+
         # if the line is already the right length, add it to the new lyrics. 
         if (gen_schema[num] == target_schema[num]): 
             new_lyrics.append(line)
-            
-        # if the line is not the right length, keep going until we find one that is
+            print("this line is good:")
+            print(line)
+        # if the line is not the right length, augment or delete
         elif (gen_schema[num] != target_schema[num]):
-            # keep track of the number of syllables in the current line
+            line = decontracted(line)
+            print("target syls:")
+            print(target_schema[num])
+            print("same line decontracted:")
+            print(line)
             syls = gen_schema[num]
-            # keep track of which line we're on 
-            track = 0
-            # while the line is not the target length,
-            while syls != target_schema[num]:
-                
-                if track == len(gen_lyrics)-1:
-                    end = True
-                    break
-                else:
-                    # go to the next line
-                    track = track + 1
-                    # check the num of syls
-                    new_line = gen_lyrics[track]
-                    syls = phoney.count_syllables(new_line)
-                    end = False
-
-            # if we found a line that's the right length before we reached the end,
-            # add the line to the new lyrics
-            if end == False:
-                new_lyrics.append(new_line)
-                repeats = np.append(repeats, track)
-                if np.count_nonzero(repeats == track) >= 2:
-                    gen_lyrics.pop(track)
-                    gen_schema.pop(track)
-
-                
-            #If we didn't find a line that's the right length,
-            if end:
-                line = decontracted(line)
-                syls = gen_schema[num]
-                
-                while syls < target_schema[num]:
-
-                    original_line = line
-                    line = aug.augment(line)
-                    line = re.sub(r'[^\w\s]','',line)
+            # If we start with fewer syllables than we want, we augment. 
+            while syls < target_schema[num]:
+                print("not enough syls")
+                original_line = line
+                line = aug.augment(line)
+                line = re.sub(r'[^\w\s]','',line)
+                print(line)
+                syls = phoney.count_syllables(line)
+            #In case we overshoot (add too many syllables)
+                if syls > target_schema[num]:
+                    print("Oops we overshot")
+                    print(line)
+                    line = original_line
                     syls = phoney.count_syllables(line)
-                #In case we overshoot (add too many syllables)
-                    if syls > target_schema[num]:
-
-                        line = original_line
-                        syls = phoney.count_syllables(line)
-                new_line = line
-
-                syls = gen_schema[num]
-                words = line.split(" ")
-                while syls > target_schema[num]:
-
-                    original_words = words
-                    #randomly delete word
-                    words.pop(random.randrange(len(words))) 
+            new_line = line
+#                print("the same line:")
+            syls = gen_schema[num]
+            words = line.split(" ")
+            while syls > target_schema[num]:
+                print("too many syls")
+                original_words = words
+                #instead of deleting the last word, try deleting a word randomly
+                #del words[-1]
+                words.pop(random.randrange(len(words))) 
+                new_line = ' '.join(words)
+                syls = phoney.count_syllables(new_line)
+                print("after removing one:")
+                print(new_line)
+                #In case too many syllables are deleted
+                if syls < target_schema[num]:
+                    print("Oops, deleted too many")
+                    print(line)
+                    words = original_words
                     new_line = ' '.join(words)
                     syls = phoney.count_syllables(new_line)
-                    
-                    #In case too many syllables are deleted
-                    if syls < target_schema[num]:
-
-                        words = original_words
-                        new_line = ' '.join(words)
-                        syls = phoney.count_syllables(new_line)
+                    print(syls)
+                    print("the target was:")
+                    print(target_schema[num])
                         
-                new_lyrics.append(new_line)
+            new_lyrics.append(new_line)
                 
     return new_lyrics
 
