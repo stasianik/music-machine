@@ -132,9 +132,9 @@ def fit_lyrics(gen_lyrics, target_lyrics):
 #    print(target_schema)
 
     # make generated lyrics same length as target lyrics
-    #target_len = len(target_schema)
-    #del gen_schema[target_len:]
-    #del gen_lyrics[target_len:]
+    target_len = len(target_schema)
+    del gen_schema[target_len:]
+    del gen_lyrics[target_len:]
     
     # initialize array for the new fitted lyrics
     new_lyrics = []
