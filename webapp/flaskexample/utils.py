@@ -11,7 +11,6 @@ import lyricsgenius as genius
 import random
 import nlpaug.augmenter.word as naw
 import re
-import numpy as np
 
 #----------------For future live text generation-----------------
 #import gpt_2_simple as gpt2
