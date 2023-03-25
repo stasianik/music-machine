@@ -1,4 +1,4 @@
-tensorflow==2.2.0
+tensorflow==2.11.1
 keras==2.3.1
 big_phoney==1.0.1
 Flask==1.1.2
